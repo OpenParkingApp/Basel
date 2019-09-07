@@ -55,8 +55,8 @@ public class Basel: Datasource {
         let freeRegex = Regex("Anzahl.+: (\\d+)")
         guard let freeStr = freeRegex.firstMatch(in: desc)?.captures[0],
             let free = Int(freeStr) else {
-            throw OpenParkingError.decoding(description: "Missing free count in item description",
-                                        underlyingError: nil)
+                throw OpenParkingError.decoding(description: "Missing free count in item description",
+                                                underlyingError: nil)
         }
 
         var type: Lot.`Type` = .structure
