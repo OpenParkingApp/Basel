@@ -7,36 +7,28 @@ public class Basel: Datasource {
     public let name = "Basel"
     public let slug = "basel"
     public let infoUrl = URL(string: "http://www.parkleitsystem-basel.ch/status.php")!
-    public let attribution: Attribution? = Attribution(contributor: "Immobilien Basel-Stadt",
-                                                       url: URL(string: "http://www.parkleitsystem-basel.ch/impressum.php")!,
-                                                       license: "Creative-Commons-Null-Lizenz (CC-0)")
+
+    public var contributor: String? = "Immobilien Basel-Stadt"
+    public var attributionURL: URL? = URL(string: "http://www.parkleitsystem-basel.ch/impressum.php")!
+    public var license: String? = "Creative-Commons-Null-Lizenz (CC-0)"
 
     let feedURL = URL(string: "http://www.parkleitsystem-basel.ch/rss_feed.php")!
 
-    public func data(completion: @escaping (Swift.Result<DataPoint, OpenParkingError>) -> Void) {
-        getRSSFeed(url: self.feedURL) { result in
-            switch result {
-            case .failure(let error):
-                completion(.failure(error))
-            case .success(let feed):
-                guard let items = feed.items,
-                    let date = items.first?.pubDate else {
-                        completion(.failure(.decoding(description: "No date or items found", underlyingError: nil)))
-                        return
-                }
-                do {
-                    let lots = try items.map(self.parse(item:))
-                    let datapoint = DataPoint(dateSource: date, lots: lots)
-                    completion(.success(datapoint))
-                } catch {
-                    if let error = error as? OpenParkingError {
-                        completion(.failure(error))
-                    } else {
-                        completion(.failure(.other(error)))
-                    }
-                }
-            }
+    public func data() throws -> DataPoint {
+        let (data, _) = try get(url: self.feedURL)
+        let parser = FeedParser(data: data)
+        let result = parser.parse()
+        guard let feed = result.rssFeed else {
+            throw OpenParkingError.decoding(description: "Failed to decode RSS Feed", underlyingError: result.error)
         }
+
+        guard let items = feed.items,
+            let date = items.first?.pubDate else {
+                throw OpenParkingError.decoding(description: "No date or items found", underlyingError: nil)
+        }
+
+        let lots = try items.map(parse(item:))
+        return DataPoint(dateSource: date, lots: lots)
     }
 
     func parse(item: RSSFeedItem) throws -> Lot {
@@ -59,13 +51,13 @@ public class Basel: Datasource {
                                                 underlyingError: nil)
         }
 
-        var type: Lot.`Type` = .structure
+        var kind: Lot.Kind = .structure
         if name.contains("Parkplatz") {
-            type = .lot
+            kind = .lot
         }
 
-        guard let coordinates = metadata.geometry.coord else {
-            throw OpenParkingError.decoding(description: "Missing coordinate data for \(name)", underlyingError: nil)
+        guard let coordinates = metadata.coordinate else {
+            throw OpenParkingError.missingMetadataField("coordinate", lot: name)
         }
         let address = metadata.properties["address"]?.value as? String
 
@@ -88,7 +80,7 @@ public class Basel: Datasource {
                    free: .discrete(free),
                    total: total,
                    state: .open,
-                   type: type,
+                   kind: kind,
                    detailURL: detailURL)
     }
 }
