@@ -14,6 +14,8 @@ public class Basel: Datasource {
 
     let feedURL = URL(string: "http://www.parkleitsystem-basel.ch/rss_feed.php")!
 
+    public init() {}
+
     public func data() throws -> DataPoint {
         let (data, _) = try get(url: self.feedURL)
         let parser = FeedParser(data: data)
