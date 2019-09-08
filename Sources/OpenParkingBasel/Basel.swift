@@ -24,13 +24,12 @@ public class Basel: Datasource {
             throw OpenParkingError.decoding(description: "Failed to decode RSS Feed", underlyingError: result.error)
         }
 
-        guard let items = feed.items,
-            let date = items.first?.pubDate else {
-                throw OpenParkingError.decoding(description: "No date or items found", underlyingError: nil)
+        guard let items = feed.items else {
+            throw OpenParkingError.decoding(description: "No items found", underlyingError: nil)
         }
 
         let lots = try items.map(parse(item:))
-        return DataPoint(dateSource: date, lots: lots)
+        return DataPoint(lots: lots)
     }
 
     func parse(item: RSSFeedItem) throws -> Lot {
@@ -74,7 +73,8 @@ public class Basel: Datasource {
             }
         }
 
-        return Lot(name: name,
+        return Lot(dataAge: item.pubDate,
+                   name: name,
                    coordinates: coordinates,
                    city: "Basel",
                    region: nil,
