@@ -47,7 +47,7 @@ public class Basel: Datasource {
 
         let freeRegex = Regex("Anzahl.+: (\\d+)")
         guard let freeStr = freeRegex.firstMatch(in: desc)?.captures[0],
-            let free = Int(freeStr) else {
+            let available = Int(freeStr) else {
                 throw OpenParkingError.decoding(description: "Missing free count in item description",
                                                 underlyingError: nil)
         }
@@ -63,13 +63,13 @@ public class Basel: Datasource {
         let address = metadata.properties["address"]?.value as? String
 
         // A few lots have weekday-specific total counts.
-        guard var total = metadata.properties["total"]?.value as? Int else {
+        guard var capacity = metadata.properties["total"]?.value as? Int else {
             throw OpenParkingError.decoding(description: "Missing total count for \(name)", underlyingError: nil)
         }
         if metadata.properties["total_by_weekday"] != nil {
             let weekday = Calendar(identifier: .gregorian).component(.weekday, from: Date())
             if let totalCount = (metadata.properties["total_by_weekday"]?.value as? [String: Int])?[String(weekday)] {
-                total = totalCount
+                capacity = totalCount
             }
         }
 
@@ -79,8 +79,8 @@ public class Basel: Datasource {
                    city: "Basel",
                    region: nil,
                    address: address,
-                   free: .discrete(free),
-                   total: total,
+                   available: .discrete(available),
+                   capacity: capacity,
                    state: .open,
                    kind: kind,
                    detailURL: detailURL)
