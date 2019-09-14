@@ -26,6 +26,6 @@ let package = Package(
             dependencies: ["OpenParkingBase", "FeedKit", "Regex"]),
         .testTarget(
             name: "OpenParkingBaselTests",
-            dependencies: ["OpenParkingBasel"]),
+            dependencies: ["OpenParkingTests", "OpenParkingBasel"]),
     ]
 )

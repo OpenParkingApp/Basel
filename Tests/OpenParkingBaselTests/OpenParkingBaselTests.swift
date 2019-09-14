@@ -1,17 +1,13 @@
 import XCTest
+import OpenParkingTests
 import OpenParkingBasel
 
 final class OpenParkingBaselTests: XCTestCase {
-    func testExample() throws {
-        let data = try Basel().data()
-        XCTAssert(!data.lots.isEmpty)
-
-        for lot in data.lots {
-            print(lot)
-        }
+    func testDatasource() throws {
+        assert(datasource: Basel(), ignoreExceededCapacity: true)
     }
 
     static var allTests = [
-        ("testExample", testExample),
+        ("testDatasource", testDatasource),
     ]
 }

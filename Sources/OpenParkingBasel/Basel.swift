@@ -32,17 +32,17 @@ public class Basel: Datasource {
         return DataPoint(lots: lots)
     }
 
-    func parse(item: RSSFeedItem) throws -> Lot {
+    func parse(item: RSSFeedItem) throws -> LotResult {
         guard let name = item.title?.unescaped,
             let link = item.link,
             let detailURL = URL(string: link),
             let desc = item.description else {
                 throw OpenParkingError.decoding(description: "RSS feed item missing title, link or description",
-                                            underlyingError: nil)
+                                                underlyingError: nil)
         }
 
         guard let metadata = geodata.lot(withName: name) else {
-            throw OpenParkingError.missingMetadata(lot: name)
+            return .failure(.missingMetadata(lot: name))
         }
 
         let freeRegex = Regex("Anzahl.+: (\\d+)")
@@ -52,13 +52,13 @@ public class Basel: Datasource {
                                                 underlyingError: nil)
         }
 
-        var kind: Lot.Kind = .structure
+        var type: Lot.LotType = .structure
         if name.contains("Parkplatz") {
-            kind = .lot
+            type = .lot
         }
 
         guard let coordinates = metadata.coordinate else {
-            throw OpenParkingError.missingMetadataField("coordinate", lot: name)
+            return .failure(.missingMetadataField("coordinate", lot: name))
         }
         let address = metadata.properties["address"]?.value as? String
 
@@ -73,16 +73,22 @@ public class Basel: Datasource {
             }
         }
 
-        return Lot(dataAge: item.pubDate,
-                   name: name,
-                   coordinates: coordinates,
-                   city: "Basel",
-                   region: nil,
-                   address: address,
-                   available: .discrete(available),
-                   capacity: capacity,
-                   state: .open,
-                   kind: kind,
-                   detailURL: detailURL)
+        var warning: String? = nil
+        if capacity < available {
+            warning = "Capacity = \(capacity), but found \(available) spots available."
+        }
+
+        return .success(Lot(dataAge: item.pubDate,
+                            name: name,
+                            coordinates: coordinates,
+                            city: "Basel",
+                            region: nil,
+                            address: address,
+                            available: .discrete(available),
+                            capacity: capacity,
+                            state: .open,
+                            type: type,
+                            detailURL: detailURL,
+                            warning: warning))
     }
 }
