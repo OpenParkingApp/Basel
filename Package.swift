@@ -13,8 +13,7 @@ let package = Package(
     ],
     dependencies: [
         // Dependencies declare other packages that this package depends on.
-        // .package(url: /* package url */, from: "1.0.0"),
-        .package(url: "https://github.com/OpenParkingApp/OpenParkingBase.git", .upToNextMinor(from: "0.3.0")),
+        .package(url: "https://github.com/OpenParkingApp/OpenParkingBase.git", .upToNextMinor(from: "0.5.0")),
         .package(url: "https://github.com/sharplet/Regex", from: "2.1.0"),
         .package(url: "https://github.com/nmdias/FeedKit", from: "8.1.1"),
     ],

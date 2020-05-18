@@ -73,9 +73,8 @@ public class Basel: Datasource {
             }
         }
 
-        var warning: String? = nil
         if capacity < available {
-            warning = "Capacity = \(capacity), but found \(available) spots available."
+            warn("Capacity = \(capacity), but found \(available) spots available.", lotName: name)
         }
 
         return .success(Lot(dataAge: item.pubDate,
@@ -88,7 +87,6 @@ public class Basel: Datasource {
                             capacity: capacity,
                             state: .open,
                             type: type,
-                            detailURL: detailURL,
-                            warning: warning))
+                            detailURL: detailURL))
     }
 }
