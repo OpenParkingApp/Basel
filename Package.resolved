@@ -29,6 +29,15 @@
         }
       },
       {
+        "package": "OpenParkingBase",
+        "repositoryURL": "https://github.com/OpenParkingApp/OpenParkingBase.git",
+        "state": {
+          "branch": null,
+          "revision": "34d75a782717a8bff65b46ef9896704e2032f088",
+          "version": "0.3.1"
+        }
+      },
+      {
         "package": "Regex",
         "repositoryURL": "https://github.com/sharplet/Regex",
         "state": {
