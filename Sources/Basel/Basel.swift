@@ -74,10 +74,6 @@ public class Basel: Datasource {
             }
         }
 
-        if capacity < available {
-            warn("Capacity = \(capacity), but found \(available) spots available.", lotName: name)
-        }
-
         return .success(Lot(dataAge: item.pubDate,
                             name: name,
                             coordinates: coordinates,
