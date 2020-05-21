@@ -1,6 +1,6 @@
 // This is a workaround until Swift packages properly support resources.
 
-import OpenParkingBase
+import Datasource
 import Foundation
 
 let geodata = try! JSONDecoder().decode(GeoJson.self, from: geojson.data(using: .utf8)!)

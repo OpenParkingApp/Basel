@@ -4,16 +4,16 @@
 import PackageDescription
 
 let package = Package(
-    name: "OpenParkingBasel",
+    name: "Basel",
     products: [
         // Products define the executables and libraries produced by a package, and make them visible to other packages.
         .library(
-            name: "OpenParkingBasel",
-            targets: ["OpenParkingBasel"]),
+            name: "Basel",
+            targets: ["Basel"]),
     ],
     dependencies: [
         // Dependencies declare other packages that this package depends on.
-        .package(url: "https://github.com/OpenParkingApp/OpenParkingBase.git", .upToNextMinor(from: "0.5.0")),
+        .package(url: "https://github.com/OpenParkingApp/Datasource.git", .upToNextMinor(from: "0.7.0")),
         .package(url: "https://github.com/sharplet/Regex", from: "2.1.0"),
         .package(url: "https://github.com/nmdias/FeedKit", from: "8.1.1"),
     ],
@@ -21,13 +21,13 @@ let package = Package(
         // Targets are the basic building blocks of a package. A target can define a module or a test suite.
         // Targets can depend on other targets in this package, and on products in packages which this package depends on.
         .target(
-            name: "OpenParkingBasel",
-            dependencies: ["OpenParkingBase", "FeedKit", "Regex"]),
+            name: "Basel",
+            dependencies: ["Datasource", "FeedKit", "Regex"]),
         .testTarget(
-            name: "OpenParkingBaselTests",
+            name: "BaselTests",
             dependencies: [
-                "OpenParkingBasel",
-                .product(name: "OpenParkingTests", package: "OpenParkingBase"),
+                "Basel",
+                .product(name: "DatasourceValidation", package: "Datasource"),
             ]),
     ]
 )

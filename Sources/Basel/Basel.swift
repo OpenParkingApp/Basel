@@ -1,12 +1,12 @@
 import Foundation
-import OpenParkingBase
+import Datasource
 import FeedKit
 import Regex
 
 public class Basel: Datasource {
     public let name = "Basel"
     public let slug = "basel"
-    public let infoUrl = URL(string: "http://www.parkleitsystem-basel.ch/status.php")!
+    public let infoURL = URL(string: "http://www.parkleitsystem-basel.ch/status.php")!
 
     public var contributor: String? = "Immobilien Basel-Stadt"
     public var attributionURL: URL? = URL(string: "http://www.parkleitsystem-basel.ch/impressum.php")!
@@ -33,7 +33,7 @@ public class Basel: Datasource {
     }
 
     func parse(item: RSSFeedItem) throws -> LotResult {
-        guard let name = item.title?.unescaped,
+        guard let name = item.title?.removingHTMLEntities,
             let link = item.link,
             let detailURL = URL(string: link),
             let desc = item.description else {
@@ -64,7 +64,8 @@ public class Basel: Datasource {
 
         // A few lots have weekday-specific total counts.
         guard var capacity = metadata.properties["total"]?.value as? Int else {
-            throw OpenParkingError.decoding(description: "Missing total count for \(name)", underlyingError: nil)
+//            throw OpenParkingError.decoding(description: "Missing total count for \(name)", underlyingError: nil)
+            throw LotError.missingMetadataField("total", lot: name)
         }
         if metadata.properties["total_by_weekday"] != nil {
             let weekday = Calendar(identifier: .gregorian).component(.weekday, from: Date())
