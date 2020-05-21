@@ -14,7 +14,6 @@ let package = Package(
     dependencies: [
         // Dependencies declare other packages that this package depends on.
         .package(url: "https://github.com/OpenParkingApp/Datasource.git", .upToNextMinor(from: "0.8.0")),
-        .package(url: "https://github.com/sharplet/Regex", from: "2.1.0"),
         .package(url: "https://github.com/nmdias/FeedKit", from: "8.1.1"),
     ],
     targets: [
@@ -22,7 +21,7 @@ let package = Package(
         // Targets can depend on other targets in this package, and on products in packages which this package depends on.
         .target(
             name: "Basel",
-            dependencies: ["Datasource", "FeedKit", "Regex"]),
+            dependencies: ["Datasource", "FeedKit"]),
         .testTarget(
             name: "BaselTests",
             dependencies: [

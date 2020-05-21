@@ -1,7 +1,6 @@
 import Foundation
 import Datasource
 import FeedKit
-import Regex
 
 public class Basel: Datasource {
     public let name = "Basel"
