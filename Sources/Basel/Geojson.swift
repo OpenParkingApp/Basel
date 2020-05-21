@@ -180,6 +180,18 @@ let geojson = """
       "address": "Güterstrasse 115",
       "total": 100
     }
+  },
+  {
+    "type": "Feature",
+    "geometry": {
+      "type": "Point",
+      "coordinates": [7.5782868, 47.5611033]
+    },
+    "properties": {
+      "name": "Parkhaus City",
+      "address": "Schanzenstrasse 48 / Klingelbergstrasse 20",
+      "total": 1114
+    }
   }]
 }
 """
