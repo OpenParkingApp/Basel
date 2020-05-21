@@ -12,7 +12,7 @@ public class Basel: Datasource {
     public var attributionURL: URL? = URL(string: "http://www.parkleitsystem-basel.ch/impressum.php")!
     public var license: String? = "Creative-Commons-Null-Lizenz (CC-0)"
 
-    let feedURL = URL(string: "http://www.parkleitsystem-basel.ch/rss_feed.php")!
+    let feedURL = URL(string: "https://www.parkleitsystem-basel.ch/rss_feed.php")!
 
     public init() {}
 
