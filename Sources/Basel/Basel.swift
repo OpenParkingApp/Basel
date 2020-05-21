@@ -33,12 +33,13 @@ public class Basel: Datasource {
     }
 
     func parse(item: RSSFeedItem) throws -> LotResult {
-        guard let name = item.title?.removingHTMLEntities,
+        guard
+            let name = item.title?.removingHTMLEntities,
             let link = item.link,
             let detailURL = URL(string: link),
-            let desc = item.description else {
-                throw OpenParkingError.decoding(description: "RSS feed item missing title, link or description",
-                                                underlyingError: nil)
+            let desc = item.description
+        else {
+            throw OpenParkingError.decoding(description: "RSS feed item missing title, link or description", underlyingError: nil)
         }
 
         guard let metadata = geodata.lot(withName: name) else {
@@ -46,10 +47,11 @@ public class Basel: Datasource {
         }
 
         let freeRegex = Regex("Anzahl.+: (\\d+)")
-        guard let freeStr = freeRegex.firstMatch(in: desc)?.captures[0],
-            let available = Int(freeStr) else {
-                throw OpenParkingError.decoding(description: "Missing free count in item description",
-                                                underlyingError: nil)
+        guard
+            let freeStr = freeRegex.firstMatch(in: desc)?.captures[0],
+            let available = Int(freeStr)
+        else {
+            throw OpenParkingError.decoding(description: "Missing free count in item description", underlyingError: nil)
         }
 
         var type: Lot.LotType = .structure
@@ -57,19 +59,18 @@ public class Basel: Datasource {
             type = .lot
         }
 
-        guard let coordinates = metadata.coordinate else {
-            return .failure(.missingMetadataField("coordinate", lot: name))
+        guard let coordinates = metadata.coordinates else {
+            return .failure(.missingMetadataField("coordinates", lot: name))
         }
-        let address = metadata.properties["address"]?.value as? String
+
+        guard var capacity: Int = metadata.total else {
+            return .failure(.missingMetadataField("total", lot: name))
+        }
 
         // A few lots have weekday-specific total counts.
-        guard var capacity = metadata.properties["total"]?.value as? Int else {
-//            throw OpenParkingError.decoding(description: "Missing total count for \(name)", underlyingError: nil)
-            throw LotError.missingMetadataField("total", lot: name)
-        }
-        if metadata.properties["total_by_weekday"] != nil {
+        if let totalByWeekday: [String: Int] = metadata.total_by_weekday {
             let weekday = Calendar(identifier: .gregorian).component(.weekday, from: Date())
-            if let totalCount = (metadata.properties["total_by_weekday"]?.value as? [String: Int])?[String(weekday)] {
+            if let totalCount = totalByWeekday[String(weekday)] {
                 capacity = totalCount
             }
         }
@@ -77,9 +78,9 @@ public class Basel: Datasource {
         return .success(Lot(dataAge: item.pubDate,
                             name: name,
                             coordinates: coordinates,
-                            city: "Basel",
+                            city: self.name,
                             region: nil,
-                            address: address,
+                            address: metadata.address,
                             available: .discrete(available),
                             capacity: capacity,
                             state: .open,
